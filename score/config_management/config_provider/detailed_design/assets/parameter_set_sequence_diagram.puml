@@ -1,0 +1,42 @@
+@startuml
+
+skinparam SequenceMessageAlignment center
+title ConfigProvider ParameterSet
+
+actor UserApp
+participant ParameterSet
+participant JsonLib
+
+rnote over UserApp, ParameterSet
+T is:
+- PrimitiveType   (int, bool, float etc)
+- Array    (score::cpp::pmr::vector<PrimitiveType>)
+- TwoDimensionalArray  (score::cpp::pmr::vector< score::cpp::pmr::vector<PrimitiveType> >)
+endrnote
+
+UserApp -> ParameterSet : GetParameterAs<T>(parameter_name)
+activate ParameterSet
+alt T is PrimitiveType
+    ParameterSet -> ParameterSet : GetParameterAsJsonAny(parameter_name)
+    activate ParameterSet
+    ParameterSet <-- ParameterSet : json::Any
+    deactivate ParameterSet
+    ParameterSet -> JsonLib : json::Any.As<PrimitiveType>()
+    activate JsonLib
+    ParameterSet <-- JsonLib : PrimitiveType
+    deactivate JsonLib
+else T is Array [Array = score::cpp::pmr::vector<PrimitiveType>]
+    ParameterSet -> ParameterSet : GetParameterAsArray<PrimitiveType>(parameter_name)
+    activate ParameterSet
+    ParameterSet <-- ParameterSet : Array
+    deactivate ParameterSet
+else T is TwoDimensionalArray [TwoDimensionalArray = score::cpp::pmr::vector< score::cpp::pmr::vector<PrimitiveType> >]
+    ParameterSet -> ParameterSet : GetParameterAsTwoDimensionalArray<PrimitiveType>(parameter_name)
+    activate ParameterSet
+    ParameterSet <-- ParameterSet : TwoDimensionalArray
+    deactivate ParameterSet
+end
+UserApp <-- ParameterSet : Result<T>
+deactivate ParameterSet
+
+@enduml

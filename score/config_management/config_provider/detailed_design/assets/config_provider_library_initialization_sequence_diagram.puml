@@ -1,0 +1,64 @@
+ @startuml
+
+skinparam SequenceMessageAlignment center
+title ConfigProvider library initialization 
+
+participant AdaptiveApplication
+
+-> AdaptiveApplication : Initialize()
+activate AdaptiveApplication
+create ConfigProvider
+participant ProxyFactory
+participant "mw::service" as mwService
+AdaptiveApplication -> ConfigProvider : <<ConfigProvider()>> 
+activate ConfigProvider
+ConfigProvider -> ProxyFactory : ProxyFactory::Create()
+activate ProxyFactory
+ProxyFactory --> ConfigProvider : proxies = mw::service::ProxyNeeds::Create<InternalConfigProviderStrategy>
+deactivate ProxyFactory
+
+ConfigProvider -> mwService : WaitForMandatoryProxies(token)
+activate mwService
+mwService -> mwCom : FindService()
+activate mwCom
+mwCom --> mwService : void
+deactivate mwCom
+
+create InternalConfigProviderImpl
+mwService -> InternalConfigProviderImpl : <<InternalConfigProviderImpl(\nproxy: std::unique_ptr<AdaptiveProxy>,  \ntimeout: const std::chrono::nanoseconds)>>
+participant "mw::com" as mwCom
+
+mwService --> ConfigProvider : Container = ProxyContainer<ProxySpec...>
+deactivate mwService
+
+ConfigProvider -> mwService : proxies.Get<InternalConfigProvider>()
+activate mwService
+mwService --> ConfigProvider : std::unique_ptr<InternalConfigProvider> internal_config_provider_proxy_
+deactivate mwService
+
+ConfigProvider -> InternalConfigProviderImpl : TrySubscribeToLastUpdatedParameterSetEvent(stop_token: const score::cpp::stop_token&, callback: score::cpp::callback<void(score::cpp::string_view)>)
+activate InternalConfigProviderImpl
+InternalConfigProviderImpl -> mwCom : proxy_->LastUpdatedParameterSet.SetReceiveHandler(callback)
+activate mwCom
+mwCom --> InternalConfigProviderImpl : void
+deactivate mwCom
+InternalConfigProviderImpl -> mwCom: proxy_->LastUpdatedParameterSet.Subscribe(mw::com::EventCacheUpdatePolicy::kNewestN, 1)
+activate mwCom
+mwCom --> InternalConfigProviderImpl : void
+deactivate mwCom
+InternalConfigProviderImpl --> ConfigProvider : bool
+deactivate InternalConfigProviderImpl
+
+ConfigProvider --> AdaptiveApplication
+deactivate ConfigProvider
+
+
+AdaptiveApplication -> ConfigProvider:  OnChangedParameterSet(set_name: score::cpp::string_view, \nscore::cpp::callback<void(ParameterSet&)>)
+activate ConfigProvider
+ConfigProvider -> ConfigProvider : client_handlers[set_name] = this_parameter_set_update_callback
+activate ConfigProvider
+deactivate ConfigProvider
+ConfigProvider --> AdaptiveApplication : void
+deactivate ConfigProvider
+<-- AdaptiveApplication 
+@enduml

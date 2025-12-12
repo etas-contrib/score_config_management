@@ -1,0 +1,67 @@
+@startuml
+
+!startsub ConfigProvider
+abstract class ConfigProvider {
+    + {abstract} GetParameterSet(\n\
+    set_name : const score::cpp::string_view,\n\
+    timeout : const std::optional<std::chrono::milliseconds>) : Result<std::shared_ptr<const ParameterSet>>
+    + {abstract} OnChangedInitialQualifierState(callback : InitialQualifierStateNotifierCallbackType&&) : ResultBlank
+    + {abstract} OnChangedParameterSet(\n\
+    set_name : const std::string&,\n\
+    callback : OnChangedParameterSetCallback&&) : ResultBlank
+    + {abstract} GetInitialQualifierState(timeout : const std::optional<std::chrono::milliseconds>) : InitialQualifierState
+    + {abstract} WaitUntilConnected(\n\
+    timeout : const std::chrono::milliseconds,\n\
+    stop_token : const score::cpp::stop_token&) : bool
+    + {abstract} CheckParameterSetUpdates() : ResultBlank
+    + {abstract} GetCachedParameterSetsCount() : std::size_t
+    --
+    Responsibility: This class is repsonsible for providing ParameterSet's and InitialQualifierState
+}
+!endsub
+
+!startsub ConfigProviderImpl
+class ConfigProviderImpl {
+    + GetParameterSet(\n\
+    set_name : const score::cpp::string_view\n\
+    timeout : const std::optional<std::chrono::milliseconds>) : Result<std::shared_ptr<const ParameterSet>>
+    + OnChangedInitialQualifierState(callback : InitialQualifierStateNotifierCallbackType&&) : ResultBlank
+    + OnChangedParameterSet(\n\
+    set_name : const std::string&,\n\
+    callback : OnChangedParameterSetCallback&&) : ResultBlank
+    + GetInitialQualifierState(timeout : const std::optional<std::chrono::milliseconds>) : InitialQualifierState
+    + CheckParameterSetUpdates() : ResultBlank
+    + WaitUntilConnected(\n\
+    timeout : const std::chrono::milliseconds,\n\
+    stop_token : const score::cpp::stop_token&) : bool
+    + GetCachedParameterSetsCount() : std::size_t
+    + IsAwaitingProxyConnection() : bool
+    + ConfigProviderImpl(\n\
+    internal_config_provider_future : mw::service::ProxyFuture<std::unique_ptr<IInternalConfigProvider>>,\n\
+    user_stop_token : score::cpp::stop_token,\n\
+    memory_resource : score::cpp::pmr::memory_resource* const,\n\
+    max_samples_limit : score::cpp::optional<std::size_t>,\n\
+    polling_cycle_interval : score::cpp::optional<std::chrono::milliseconds>,\n\
+    callback : IsAvailableNotificationCallback,\n\
+    persistency : score::cpp::pmr::unique_ptr<Persistency>)
+    --
+    - logger_ : mw::log::Logger&
+    - parameter_sets_ : ParameterMap
+    - initial_qualifier_state_ : InitialQualifierState
+    - memory_resource_ : score::cpp::pmr::memory_resource* const
+    - internal_config_provider_ : std::shared_ptr<IInternalConfigProvider>
+    - mutex_ : mutable std::mutex
+    - internal_config_provider_cv_ : concurrency::InterruptibleConditionalVariable
+    - persistency_ : score::cpp::pmr::unique_ptr<Persistency>
+    - client_handlers_ : ClientHandlersMap
+    - max_samples_limit_ : score::cpp::optional<std::size_t>
+    - polling_cycle_interval_ : score::cpp::optional<std::chrono::milliseconds>
+    - proxy_available_thread_ : score::cpp::optional<score::cpp::jthread>
+    - stop_callback_ : score::cpp::optional<score::cpp::stop_callback>
+}
+
+ConfigProvider <|-- ConfigProviderImpl
+
+!endsub
+
+@enduml

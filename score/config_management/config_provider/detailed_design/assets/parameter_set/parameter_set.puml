@@ -1,0 +1,23 @@
+@startuml
+
+!startsub ParameterSet
+class ParameterSet {
+    + ParameterSet(set_json : score::json::Any, memory_resource : score::cpp::pmr::memory_resource* const)
+    + ContainsSameContent(target_parameter_set : const ParameterSet&) : bool
+    + GetQualifier() : score::Result<score::platform::config_daemon::ParameterSetQualifier>
+    + GetParameterAs(parameter_name : const score::cpp::string_view&) : score::Result<T>
+    + GetParameterAs(parameter_name : const score::cpp::string_view&) : score::Result<Array<typename T::value_type>>
+    + GetParameterAs(parameter_name : const score::cpp::string_view&) : score::Result<TwoDimensionalArray<typename T::value_type::value_type>>
+    + FormatAsKeyValuePairs() : score::Result<std::string>
+    + GetParametersAsString() : score::Result<std::string>
+    + GetParameterAsJsonAny(parameter_name : const score::cpp::string_view&) : score::Result<std::reference_wrapper<const score::json::Any>>
+    --
+    - logger_ : mw::log::Logger&
+    - set_json_ : score::json::Any
+    - memory_resource_ : score::cpp::pmr::memory_resource* const
+    --
+    Responsibility: This class is responsible for storing Parameter's data
+}
+!endsub
+
+@enduml
