@@ -11,10 +11,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 module(
-    name = "cpp_rust_template_repository",
+    name = "score_config_management",
     version = "1.0",
 )
 
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "rules_python", version = "1.4.1")
 
 PYTHON_VERSION = "3.12"
@@ -27,7 +28,7 @@ python.toolchain(
 use_repo(python)
 
 # Add GoogleTest dependency
-bazel_dep(name = "googletest", version = "1.17.0")
+bazel_dep(name = "googletest", version = "1.17.0.bcr.1")
 
 # Rust rules for Bazel
 bazel_dep(name = "rules_rust", version = "0.63.0")
@@ -49,9 +50,12 @@ use_repo(llvm, "llvm_toolchain_llvm")
 register_toolchains("@llvm_toolchain//:all")
 
 # tooling
-bazel_dep(name = "score_tooling", version = "1.0.1")
+bazel_dep(name = "score_tooling", version = "1.0.4")
 bazel_dep(name = "aspect_rules_lint", version = "1.5.3")
 bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2")
 
 #docs-as-code
-bazel_dep(name = "score_docs_as_code", version = "1.1.0")
+bazel_dep(name = "score_docs_as_code", version = "2.2.0")
+
+# s-core base libs
+bazel_dep(name = "score_baselibs", version = "0.2.2")
