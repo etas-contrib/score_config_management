@@ -10,53 +10,38 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-
-# Builds the CfgD & CfgP targets listed in the acceptlist
-# (score/config_management/deps_whitelist.json) and fails if any previously
-# known-good target no longer builds — detecting regressions in the CI setup.
-
-name: Build Acceptlist Check
+name: Static Analysis
 
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-    paths:
-      - "score/**"
-      - "MODULE.bazel"
-      - "score/config_management/deps_whitelist.json"
-      - ".github/workflows/deps-whitelist-check.yml"
   push:
     branches:
       - main
-    paths:
-      - "score/**"
-      - "MODULE.bazel"
-      - "score/config_management/deps_whitelist.json"
   merge_group:
     types: [checks_requested]
 
 jobs:
-  build-acceptlist-check:
-    name: Build whitelisted CfgD & CfgP targets
+  static-analysis:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build all acceptlisted targets
+      - name: Run clang-tidy on all targets from deps_whitelist.json
         run: |
-          python3 - <<'EOF'
+          python3 - <<'PYEOF'
           import json, subprocess, sys
 
           ACCEPTLIST = "score/config_management/deps_whitelist.json"
 
           with open(ACCEPTLIST) as f:
-              targets = json.load(f)["buildable_targets"]
+              targets = json.load(f)["clang_tidy_targets"]
 
           failures = []
           for target in targets:
               result = subprocess.run(
-                  ["bazel", "build", target],
+                  ["bazel", "build", target, "--config=host_gcc"],
                   capture_output=True, text=True
               )
               if result.returncode == 0:
@@ -64,12 +49,13 @@ jobs:
               else:
                   failures.append(target)
                   print(f"  FAIL  {target}")
+                  print(result.stderr[-2000:])
 
-          print(f"\n{len(targets) - len(failures)}/{len(targets)} targets built successfully.")
+          print(f"\n{len(targets) - len(failures)}/{len(targets)} clang-tidy targets passed.")
 
           if failures:
-              print("\nRegression detected — the following targets no longer build:")
+              print("\nStatic analysis failed for the following targets:")
               for t in failures:
                   print(f"  {t}")
               sys.exit(1)
-          EOF
+          PYEOF
