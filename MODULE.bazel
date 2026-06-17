@@ -86,6 +86,8 @@ git_override(
 )
 
 bazel_dep(name = "score_lifecycle_health", version = "0.2.0")
+local_path_override(module_name = "score_lifecycle_health", path = "/home/stt1rlz/sources/score_inc_lifecycle")
+
 
 # s-core persistency
 bazel_dep(name = "score_persistency", version = "0.3.2")

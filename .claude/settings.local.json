@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /home/stt1rlz/sources/score_config_management/external -name \"gmock.h\" 2>/dev/null | head -3)",
+      "Read(//home/stt1rlz/.cache/bazel/_bazel_stt1rlz/771ff20e0bb5d56d665aca1242a98952/external/**)",
+      "Bash(grep -r \"GOOGLETEST_VERSION\\\\|GMOCK_VERSION\" /home/stt1rlz/sources/score_config_management/bazel-out/../external/googletest+ --include=\"*.h\" 2>/dev/null | grep \"define\" | head -5)",
+      "Read(//home/stt1rlz/sources/score_config_management/external/googletest+/**)"
+    ]
+  }
+}
