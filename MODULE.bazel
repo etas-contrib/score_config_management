@@ -97,3 +97,11 @@ git_override(
     commit = "a4f7e95210d8093ba208b91cbc5b681eae8d502b",  # trlc-2.0.3 release
     remote = "https://github.com/bmw-software-engineering/trlc.git",
 )
+
+# Lobster requirements-traceability tooling
+bazel_dep(name = "lobster", version = "0.0.0")
+git_override(
+    module_name = "lobster",
+    commit = "d528fbdec2cd72ff7967b51546fb0bd935810258",
+    remote = "https://github.com/bmw-software-engineering/lobster.git",
+)
