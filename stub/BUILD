@@ -12,4 +12,9 @@
 # *******************************************************************************
 
 # Required by Bazel 8's label_flag rule as an implicit dependency.
-filegroup(name = "stub")
+# No-op tracing library wired in via .bazelrc:
+# --@score_communication//score/mw/com/flags:tracing_library=stub
+alias(
+    name = "stub",
+    actual = "@score_baselibs//score/analysis/tracing/generic_trace_library/stub_implementation:stub_implementation",
+)
