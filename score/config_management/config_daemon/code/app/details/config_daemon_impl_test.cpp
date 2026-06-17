@@ -29,6 +29,75 @@
 
 #include <memory>
 
+// Forward declaration for the explicit ProvidedServices specialization below.
+namespace score
+{
+namespace config_management
+{
+namespace config_daemon
+{
+namespace test
+{
+template <typename ServiceType>
+class ServiceDecorator;
+}  // namespace test
+}  // namespace config_daemon
+}  // namespace config_management
+}  // namespace score
+
+// The stub ProvidedServices<T> from score_communication always returns Count()=0 and has a
+// no-op Add(). This explicit specialisation for the test-local ServiceDecorator type provides
+// a real count so that ProvidedServiceContainer::NumServices() returns a non-zero value when
+// services have been added, without modifying any external headers.
+namespace score
+{
+namespace mw
+{
+namespace service
+{
+
+template <>
+class ProvidedServices<score::config_management::config_daemon::test::ServiceDecorator> final
+    : public ProvidedServicesBase
+{
+  public:
+    ProvidedServices() noexcept = default;
+    ~ProvidedServices() noexcept override = default;
+    ProvidedServices(ProvidedServices&&) noexcept = default;
+    ProvidedServices& operator=(ProvidedServices&&) noexcept = default;
+    ProvidedServices(const ProvidedServices&) = delete;
+    ProvidedServices& operator=(const ProvidedServices&) = delete;
+
+    template <typename ServiceType, typename... Args>
+    ProvidedServices& Add(Args&&... /* args */) &
+    {
+        count_++;
+        return *this;
+    }
+
+    template <typename ServiceType, typename... Args>
+    ProvidedServices&& Add(Args&&... /* args */) &&
+    {
+        count_++;
+        return std::move(*this);
+    }
+
+    std::size_t Count() const noexcept override
+    {
+        return count_;
+    }
+
+    void StartAll() override {}
+    void StopAll() override {}
+
+  private:
+    std::size_t count_{0};
+};
+
+}  // namespace service
+}  // namespace mw
+}  // namespace score
+
 namespace score
 {
 namespace config_management

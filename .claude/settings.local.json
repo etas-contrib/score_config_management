@@ -2,8 +2,7 @@
   "permissions": {
     "allow": [
       "Bash",
-      "Read(//home/stt1rlz/.cache/bazel/_bazel_stt1rlz/771ff20e0bb5d56d665aca1242a98952/external/**)",
-      "Read(//home/stt1rlz/sources/score_config_management/external/googletest+/**)"
+      "Read"
     ]
   }
 }
