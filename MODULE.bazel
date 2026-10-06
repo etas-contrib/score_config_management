@@ -52,8 +52,8 @@ register_toolchains(
 )
 
 # Score C++ toolchain — used for --config=host_gcc in CI (tests, static-analysis)
-bazel_dep(name = "score_bazel_platforms", version = "1.0.0", dev_dependency = True)
-bazel_dep(name = "score_bazel_cpp_toolchains", version = "0.5.4", dev_dependency = True)
+bazel_dep(name = "score_bazel_platforms", version = "1.1.0", dev_dependency = True)
+bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.0.3", dev_dependency = True)
 
 gcc = use_extension("@score_bazel_cpp_toolchains//extensions:gcc.bzl", "gcc", dev_dependency = True)
 gcc.toolchain(
@@ -92,7 +92,7 @@ use_repo(
 
 # UTs on QNX — run_under wrapper that boots QEMU
 bazel_dep(name = "score_qnx_unit_tests", version = "0.2.0", dev_dependency = True)
-bazel_dep(name = "score_rules_imagefs", version = "0.0.4", dev_dependency = True)
+bazel_dep(name = "score_rules_imagefs", version = "0.1.0", dev_dependency = True)
 
 imagefs = use_extension("@score_rules_imagefs//extensions:imagefs.bzl", "imagefs", dev_dependency = True)
 imagefs.toolchain(
@@ -114,13 +114,14 @@ imagefs.toolchain(
 use_repo(imagefs, "score_qnx_aarch64_ifs_toolchain", "score_qnx_x86_64_ifs_toolchain")
 
 # Ferrocene (safety-certified Rust) — needed for Rust targets on QNX
-bazel_dep(name = "score_toolchains_rust", version = "0.9.1", dev_dependency = True)
+bazel_dep(name = "score_toolchains_rust", version = "0.10.0", dev_dependency = True)
 
 # tooling
 bazel_dep(name = "score_tooling", version = "1.2.0")
 
 # NOTE: git_override to get sphinx_module + docs_library_deps + dependable_element _rst target.
-# NOTE: To be removed once score_tooling releases a stable version with these features.
+# NOTE: score_tooling v2.3.1 was tried but breaks libclang_toolchain's API (cxx_builtin_include/
+# extra_config_site removed, cc_toolchain made mandatory) — keep this pin until that's resolved.
 git_override(
     module_name = "score_tooling",
     commit = "835f219a1121b316c4c7809d983db1b4d31ebbcf",
@@ -129,41 +130,22 @@ git_override(
     remote = "https://github.com/eclipse-score/tooling.git",
 )
 
-bazel_dep(name = "aspect_rules_lint", version = "2.3.0")
-bazel_dep(name = "buildifier_prebuilt", version = "8.5.1")
+bazel_dep(name = "aspect_rules_lint", version = "2.3.0", dev_dependency = True)
+bazel_dep(name = "buildifier_prebuilt", version = "8.5.1", dev_dependency = True)
 
 # Pin grpc-java (plain bazel_dep, not single_version_override, so it propagates to consumers) to work around BCR grpc@1.70.1 breakage (see eclipse-score/lifecycle, https://github.com/grpc/grpc-java/issues/12165).
 bazel_dep(name = "grpc-java", version = "1.70.0")
 
 # s-core base libs
-bazel_dep(name = "score_baselibs", version = "0.2.9")
-git_override(
-    module_name = "score_baselibs",
-    commit = "82f9402474d6dd210fb0cfe5d1867f0d757318c4",
-    remote = "https://github.com/eclipse-score/baselibs.git",
-)
+bazel_dep(name = "score_baselibs", version = "0.2.14")
 
 # s-core communication
-bazel_dep(name = "score_communication", version = "0.4.0")
-bazel_dep(name = "score_logging", version = "0.2.1")
-git_override(
-    module_name = "score_logging",
-    # Commit after fix: "Suppress unused variable warnings in SignalHandling::WithSigTermBlocked"
-    # (cafa286e27609db638b78261256b39143c66550f, May 15 2026) which resolves the
-    # -Werror,-Wunused-variable build failure caused by 'block_result' in score_logging v0.2.1.
-    commit = "7669689f72a9668f4c56797a391f00cac1de4436",
-    remote = "https://github.com/eclipse-score/logging.git",
-)
-
-bazel_dep(name = "score_lifecycle", version = "0.5.0")
+bazel_dep(name = "score_communication", version = "0.5.0")
+bazel_dep(name = "score_logging", version = "0.2.4")
+bazel_dep(name = "score_lifecycle", version = "0.7.0")
 
 # s-core persistency
-bazel_dep(name = "score_persistency", version = "0.3.2")
-single_version_override(
-    module_name = "score_persistency",
-    patch_strip = 1,
-    patches = ["//bazel/patches:score_persistency_fix_string_view_to_string.patch"],
-)
+bazel_dep(name = "score_persistency", version = "0.3.5")
 
 # TRLC dependency — commit matches score_tooling ade2a09e
 bazel_dep(name = "trlc", version = "0.0.0", dev_dependency = True)
