@@ -19,10 +19,9 @@ load(
 
 component(
     name = "config_daemon_component",
-    # TODO: config_daemon_app_unit transitively depends on config_daemon_impl.cpp, which
-    # does not compile against the current mw::service/mw::com stack (see config_provider_component
-    # below), so it is left out here until that API lands upstream.
-    components = [],
+    components = [
+        "//score/config_management/config_daemon/code/app/details:config_daemon_app_unit",
+    ],
     requirements = ["//requirements/component_requirements/config_daemon:component_requirements"],
     tests = [],
     visibility = ["//visibility:public"],
