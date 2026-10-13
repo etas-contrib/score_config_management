@@ -12,6 +12,7 @@
 # *******************************************************************************
 
 name: QNX Build & Test
+# Dummy change to trigger a PR validating the QNX workflow end-to-end.
 on:
   pull_request_target:
     types: [opened, reopened, synchronize]
@@ -23,6 +24,17 @@ on:
   workflow_call:
   workflow_dispatch:
 jobs:
+  debug-qnx-secrets:
+    name: Debug QNX secret visibility
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check secret visibility (no values printed)
+        run: |
+          [ -n "${{ secrets.SCORE_QNX_LICENSE }}" ] && echo "SCORE_QNX_LICENSE: SET" || echo "SCORE_QNX_LICENSE: EMPTY/MISSING"
+          [ -n "${{ secrets.SCORE_QNX_USER }}" ] && echo "SCORE_QNX_USER: SET" || echo "SCORE_QNX_USER: EMPTY/MISSING"
+          [ -n "${{ secrets.SCORE_QNX_PASSWORD }}" ] && echo "SCORE_QNX_PASSWORD: SET" || echo "SCORE_QNX_PASSWORD: EMPTY/MISSING"
   qnx-build:
     name: Build and Test ${{ matrix.bazel-config }}
     strategy:
@@ -55,3 +67,4 @@ jobs:
       score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
       score-qnx-user: ${{ secrets.SCORE_QNX_USER }}
       score-qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
+
