@@ -51,7 +51,6 @@ jobs:
               except //score/config_management/config_provider/code/config_provider/details/...
               except //score/config_management/config_provider/code/config_provider/factory/...
               except //score/config_management/config_provider/code/config_provider:unit_tests_host
-              except //score/config_management/config_daemon/code:main_function_test
               except //score/config_management/config_daemon/code:unit_tests_host
               except //score/config_management/config_daemon:unit_tests_host
               except //score/config_management/config_daemon/code:config_daemon
