@@ -42,20 +42,8 @@ jobs:
         run: ./.github/tools/check_coverage_scope.sh
       - name: Run Bazel Coverage (LLVM, line + branch)
         run: |
-          # See test.yml for why the known-broken targets are excluded via
-          # `bazel query ... except ...` instead of a `bazel coverage // ... -- -//excluded`
-          # target pattern.
           TARGETS=$(bazel query --keep_going \
             '//score/config_management/...
-              except //score/config_management/config_provider:all
-              except //score/config_management/config_provider/code/config_provider/details/...
-              except //score/config_management/config_provider/code/config_provider/factory/...
-              except //score/config_management/config_provider/code/config_provider:unit_tests_host
-              except //score/config_management/config_daemon/code:unit_tests_host
-              except //score/config_management/config_daemon:unit_tests_host
-              except //score/config_management/config_daemon/code:config_daemon
-              except //score/config_management/config_daemon/code/factory/details:unit_test_mw_com
-              except //score/config_management/config_daemon/code/factory:unit_tests_host
               except //score/config_management/dependability/...' \
             2>/dev/null)
           bazel coverage --config=llvm_cov --keep_going --build_tests_only $TARGETS

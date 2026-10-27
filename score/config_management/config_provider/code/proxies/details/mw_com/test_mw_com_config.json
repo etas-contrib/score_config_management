@@ -1,7 +1,7 @@
 {
   "serviceTypes": [
     {
-      "serviceTypeName": "/score/config_management/config_daemon/InternalConfigProviderService",
+      "serviceTypeName": "config_management/config_daemon/InternalConfigProviderService",
       "version": {
         "major": 1,
         "minor": 0
@@ -9,22 +9,22 @@
       "bindings": [
         {
           "binding": "SHM",
-          "serviceId": 3101,
+          "serviceId": 7000,
           "events": [
             {
-              "eventName": "last_updated_parameterset",
+              "eventName": "last_updated_parameter_set",
               "eventId": 1
             }
           ],
-            "fields": [
+          "fields": [
             {
               "fieldName": "initial_qualifier_state",
               "fieldId": 2
             }
           ],
-          "methods":[
+          "methods": [
             {
-              "methodName": "get_parameterset",
+              "methodName": "get_parameter_set",
               "methodId": 3
             }
           ]
@@ -34,8 +34,8 @@
   ],
   "serviceInstances": [
     {
-      "instanceSpecifier": "ConfigDaemon/ConfigDaemon_RootSwc/InternalConfigProviderAppPPort",
-      "serviceTypeName": "/score/config_management/config_daemon/InternalConfigProviderService",
+      "instanceSpecifier": "ConfigDaemonCustomer/ConfigDaemonCustomer_RootSwc/InternalConfigProviderAppRPort",
+      "serviceTypeName": "config_management/config_daemon/InternalConfigProviderService",
       "version": {
         "major": 1,
         "minor": 0
@@ -47,7 +47,7 @@
           "binding": "SHM",
           "events": [
             {
-              "eventName": "last_updated_parameterset",
+              "eventName": "last_updated_parameter_set",
               "eventId": 1,
               "maxSamples": 2,
               "maxSubscribers": 1
@@ -55,14 +55,14 @@
           ],
           "fields": [
             {
-                "fieldName": "initial_qualifier_state",
-                "numberOfSampleSlots": 2,
-                "maxSubscribers": 2
+              "fieldName": "initial_qualifier_state",
+              "numberOfSampleSlots": 2,
+              "maxSubscribers": 2
             }
           ],
           "methods": [
             {
-              "methodName": "get_parameterset",
+              "methodName": "get_parameter_set",
               "queueSize": 1
             }
           ]

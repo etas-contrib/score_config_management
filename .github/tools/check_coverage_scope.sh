@@ -36,22 +36,8 @@ trap 'rm -f "$all" "$scoped" "$excluded"' EXIT
 # test.yml's exclusion query; see that file for why each is excluded).
 ACCEPT_TARGETS=$(bazel query --keep_going \
   '//score/config_management/...
-    except //score/config_management/config_provider:all
-    except //score/config_management/config_provider/code/config_provider/details/...
-    except //score/config_management/config_provider/code/config_provider/factory/...
-    except //score/config_management/config_provider/code/config_provider:unit_tests_host
-    except //score/config_management/config_daemon/code/app/details:unit_test
-    except //score/config_management/config_daemon/code/app/details:app_for_unit_test
-    except //score/config_management/config_daemon/code/app/details:config_daemon_app_unit
-    except //score/config_management/config_daemon/code/app:unit_tests_host
-    except //score/config_management/config_daemon/code:main_function_test
-    except //score/config_management/config_daemon/code:unit_tests_host
-    except //score/config_management/config_daemon:unit_tests_host
-    except //score/config_management/config_daemon/code:config_daemon
-    except //score/config_management/config_daemon/code/factory/details:unit_test_mw_com
-    except //score/config_management/config_daemon/code/factory:unit_tests_host
     except //score/config_management/dependability/...' \
-  2>/dev/null)
+  2>/dev/null) || true
 bazel query \
   "kind(\"cc_library|rust_library|rust_proc_macro\", set($ACCEPT_TARGETS)) \
    except attr(testonly, 1, set($ACCEPT_TARGETS))" \

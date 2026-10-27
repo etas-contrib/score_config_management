@@ -36,7 +36,10 @@ bazel_dep(name = "rules_rust", version = "0.68.1-score")
 bazel_dep(name = "rules_cc", version = "0.2.17")
 
 # LLVM Toolchains Rules - host configuration
-bazel_dep(name = "toolchains_llvm", version = "1.8.0", dev_dependency = True)
+# 1.8.0 force-includes a generated redacted_dates.h via -imacros (PR bazel-contrib/toolchains_llvm#756)
+# which isn't wired into assembly-compile actions, breaking rules_rust cc-rs crates
+# (e.g. psm) with "file not found". Reverted in #825, fixed starting 1.9.0.
+bazel_dep(name = "toolchains_llvm", version = "1.9.1", dev_dependency = True)
 
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm", dev_dependency = True)
 llvm.toolchain(
@@ -153,6 +156,18 @@ bazel_dep(name = "score_baselibs", version = "0.2.14")
 
 # s-core communication
 bazel_dep(name = "score_communication", version = "0.5.0")
+
+# New mw::com APIs are not in a published release yet. Pinned to the earliest
+# commit with ProvidedServicesContainer (2026-10-01) rather than a later one,
+# since this commit still requires score_tooling@2.2.2 - newer commits bump to
+# score_tooling@2.3.1 (removes the `fmea` rule we use) and a much larger set
+# of transitive deps, which broke the exec-platform Rust toolchain used by docs.
+git_override(
+    module_name = "score_communication",
+    commit = "522cf18c557beabd3c8b6ce7fd805418fb37c045",
+    remote = "https://github.com/eclipse-score/communication.git",
+)
+
 bazel_dep(name = "score_logging", version = "0.2.4")
 bazel_dep(name = "score_lifecycle", version = "0.7.0")
 

@@ -1,5 +1,5 @@
 # *******************************************************************************
-# Copyright (c) 2025 Contributors to the Eclipse Foundation
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -12,22 +12,30 @@
 # *******************************************************************************
 
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@score_baselibs//:bazel/unit_tests.bzl", "cc_gtest_unit_test")
 load("@score_baselibs//score/language/safecpp:toolchain_features.bzl", "COMPILER_WARNING_FEATURES")
 
 cc_library(
-    name = "internal_config_provider_type",
-    srcs = [
-        "internal_config_provider_type.cpp",
-    ],
-    hdrs = [
-        "internal_config_provider_type.h",
-    ],
+    name = "error",
+    srcs = ["error.cpp"],
+    hdrs = ["error.h"],
     features = COMPILER_WARNING_FEATURES,
     tags = ["FUSA"],
     visibility = [
-        "//score/config_management/config_provider:__subpackages__",
+        "//score/config_management/config_daemon:__subpackages__",
+        "//score/config_management/lib/parameter_set_json_serializer:__subpackages__",
     ],
     deps = [
-        "@score_communication//score/mw/com",
+        "@score_baselibs//score/language/futurecpp",
+        "@score_baselibs//score/result",
+    ],
+)
+
+cc_gtest_unit_test(
+    name = "error_test",
+    srcs = ["error_test.cpp"],
+    features = COMPILER_WARNING_FEATURES,
+    deps = [
+        ":error",
     ],
 )

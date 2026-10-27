@@ -1,7 +1,7 @@
 {
   "serviceTypes": [
     {
-      "serviceTypeName": "/score/config_management/config_daemon/InternalConfigProviderService",
+      "serviceTypeName": "config_management/config_daemon/InternalConfigProviderService",
       "version": {
         "major": 1,
         "minor": 0
@@ -9,10 +9,10 @@
       "bindings": [
         {
           "binding": "SHM",
-          "serviceId": 3101,
+          "serviceId": 7000,
           "events": [
             {
-              "eventName": "last_updated_parameterset",
+              "eventName": "last_updated_parameter_set",
               "eventId": 1
             }
           ],
@@ -21,6 +21,12 @@
               "fieldName": "initial_qualifier_state",
               "fieldId": 2
             }
+          ],
+          "methods":[
+            {
+              "methodName": "get_parameter_set",
+              "methodId": 3
+            }
           ]
         }
       ]
@@ -28,8 +34,8 @@
   ],
   "serviceInstances": [
     {
-      "instanceSpecifier": "ConfigDaemonCustomer/ConfigDaemonCustomer_RootSwc/InternalConfigProviderAppRPort",
-      "serviceTypeName": "/score/config_management/config_daemon/InternalConfigProviderService",
+      "instanceSpecifier": "ConfigDaemon/ConfigDaemon_RootSwc/InternalConfigProviderAppPPort",
+      "serviceTypeName": "config_management/config_daemon/InternalConfigProviderService",
       "version": {
         "major": 1,
         "minor": 0
@@ -37,32 +43,27 @@
       "instances": [
         {
           "instanceId": 1,
-          "allowedProvider": {
-              "QM": [
-                  1030
-              ]
-          },
-          "allowedConsumer": {
-              "QM": [
-                  1030
-              ]
-          },
           "asil-level": "QM",
           "binding": "SHM",
           "events": [
             {
-              "eventName": "last_updated_parameterset",
+              "eventName": "last_updated_parameter_set",
               "eventId": 1,
-              "maxSamples": 2,
+              "numberOfSampleSlots": 2,
               "maxSubscribers": 1
             }
           ],
           "fields": [
             {
                 "fieldName": "initial_qualifier_state",
-                "fieldId": 2,
                 "numberOfSampleSlots": 2,
                 "maxSubscribers": 2
+            }
+          ],
+          "methods": [
+            {
+              "methodName": "get_parameter_set",
+              "queueSize": 1
             }
           ]
         }

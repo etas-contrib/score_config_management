@@ -12,7 +12,26 @@
 # *******************************************************************************
 
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@score_baselibs//:bazel/unit_tests.bzl", "cc_gtest_unit_test")
 load("@score_baselibs//score/language/safecpp:toolchain_features.bzl", "COMPILER_WARNING_FEATURES")
+
+cc_library(
+    name = "runtime_sized_array",
+    srcs = ["runtime_sized_array.cpp"],
+    hdrs = ["runtime_sized_array.h"],
+    features = COMPILER_WARNING_FEATURES,
+    deps = [
+        "@score_baselibs//score/language/futurecpp",
+    ],
+)
+
+cc_gtest_unit_test(
+    name = "runtime_sized_array_test",
+    srcs = ["runtime_sized_array_test.cpp"],
+    deps = [
+        ":runtime_sized_array",
+    ],
+)
 
 cc_library(
     name = "internal_config_provider_type",
@@ -24,12 +43,10 @@ cc_library(
     ],
     features = COMPILER_WARNING_FEATURES,
     tags = ["FUSA"],
-    visibility = [
-        "//score/config_management/config_daemon/code:__subpackages__",
-        "//score/config_management/config_daemon/test:__subpackages__",
-        "//score/config_management/config_provider:__subpackages__",
-    ],
+    visibility = ["//visibility:public"],
     deps = [
+        ":runtime_sized_array",
+        "@score_communication//score/memory/shared:polymorphic_offset_ptr_allocator",
         "@score_communication//score/mw/com",
     ],
 )
